@@ -1,0 +1,448 @@
+DOCUMENTO DE VISÃO E REQUISITOS DO PRODUTO
+10 ou 2
+SaaS de organização e gestão de futebol amador / peladas
+
+Documento de referência para produto, UX/UI e desenvolvimento
+Versão inicial — consolidação das regras e ideias do projeto
+
+1. Visão geral do produto
+O 10 ou 2 é um SaaS criado para organizar uma partida de futebol amador do início ao fim. A proposta não é apenas montar times antes do jogo. O sistema deve acompanhar toda a jornada: convocação, pré-lista, confirmação de presença, formação inicial, controle das partidas, fila de próximos times, substituições, entradas e saídas de jogadores, regras de empate, goleiros, placar, gols, assistências, histórico e resumo final.
+O principal diferencial do produto é transformar a organização da pelada em um sistema vivo, usado durante todo o evento. Hoje, muitos grupos usam WhatsApp, papel, prancheta ou aplicativos que servem apenas para criar a lista e sortear os times. O 10 ou 2 deve continuar sendo útil durante as duas ou três horas de futebol.
+Visão do produto: O sistema deve fazer o futebol funcionar, reduzindo a necessidade de papel, memória, discussão e organização manual.
+Princípio central: O organizador deve sentir que, depois de usar o produto, voltar a organizar a pelada manualmente é pior, mais lento e mais confuso.
+Público principal: A pessoa que organiza regularmente uma pelada e normalmente é responsável por convocar os jogadores, receber pagamentos e organizar o jogo.
+Público secundário: Administradores auxiliares e jogadores participantes.
+2. Conceito estrutural do produto
+O sistema deve ser pensado em quatro grandes momentos:
+ANTES DO JOGO: criação do evento, convite, pré-lista, pagamento e informações do jogo.
+INÍCIO DO JOGO: check-in, confirmação dos presentes e formação dos primeiros times.
+DURANTE O JOGO: partidas, cronômetro, placar, fila, regras, troca de times, entradas e saídas.
+FINAL DO JOGO: encerramento do evento, histórico, estatísticas e compartilhamento.
+A arquitetura do produto deve refletir essa jornada. O jogo não deve ser tratado como uma simples lista de nomes, mas como um evento com estado, regras e histórico.
+3. Hierarquia de usuários e permissões
+3.1 Super Administrador
+É o proprietário da conta ou da pelada. Normalmente é quem contrata o SaaS e organiza o futebol.
+Criar e editar a estrutura da pelada.
+Criar eventos/jogos.
+Configurar regras gerais.
+Definir regras específicas do evento.
+Cadastrar e gerenciar administradores auxiliares.
+Definir permissões dos administradores auxiliares.
+Configurar valor e dados de pagamento, quando aplicável.
+Finalizar o evento.
+Acessar histórico e estatísticas.
+3.2 Administrador Auxiliar
+Pessoa autorizada pelo Super Administrador para ajudar na organização.
+Pode ter acesso ao controle do evento.
+Pode confirmar jogadores.
+Pode montar ou ajustar times.
+Pode controlar partidas e registrar gols, dependendo das permissões.
+Pode ter ou não acesso às configurações estruturais, conforme autorização.
+3.3 Jogador
+Participante da pelada. Não deve ser obrigado a criar uma conta completa para entrar em um evento.
+Pode entrar por link compartilhado.
+Informa o nome.
+Pode indicar se é jogador de linha ou goleiro.
+Pode confirmar presença conforme o fluxo definido.
+Pode visualizar informações do jogo.
+Decisão de produto: O sistema deve reduzir o atrito para jogadores. O administrador precisa de uma conta completa; o jogador pode participar via link e identificação simples, salvo se futuramente for criada uma conta opcional.
+4. Estrutura da pelada e dos eventos
+A conta deve permitir que uma mesma organização mantenha uma pelada recorrente, como 'Futebol de Quinta', e crie eventos individuais para cada dia.
+4.1 Estrutura permanente da pelada
+Dados que normalmente permanecem entre os eventos.
+Nome da pelada.
+Organizador principal.
+Administradores auxiliares.
+Regras padrão.
+Número padrão de jogadores de linha por time.
+Uso ou não de goleiros fixos.
+Regras padrão de vitória, empate e fila.
+Dados de pagamento, se aplicável.
+4.2 Evento individual
+Cada sessão de futebol deve ser um evento independente, com data, horário e estado próprio.
+Nome do evento ou nome da pelada.
+Data.
+Horário.
+Local.
+Link de participação.
+Lista de jogadores.
+Configurações específicas do dia.
+Histórico das partidas daquele dia.
+Resultado e estatísticas do dia.
+5. Configurações do jogo
+O Super Administrador deve conseguir configurar as regras da pelada. As configurações devem ser claras, mas permitir flexibilidade suficiente para diferentes formatos.
+5.1 Número de jogadores de linha por time
+A configuração principal deve ser o número de jogadores de linha. Exemplo: 4, 5 ou 6 jogadores de linha.
+O goleiro não deve ser incluído nessa configuração quando houver goleiro fixo.
+Exemplo: 5 jogadores de linha + 1 goleiro fixo.
+A formação dos times deve usar o número configurado de jogadores de linha.
+5.2 Goleiro fixo
+A pelada pode ter ou não goleiros fixos.
+Com goleiro fixo: os goleiros possuem uma fila/rotação própria.
+Sem goleiro fixo: o sistema não precisa administrar uma fila exclusiva de goleiros.
+O goleiro fixo pode ser identificado no cadastro do jogador.
+5.3 Tempo da partida
+O administrador deve poder definir o limite de tempo de cada partida.
+Exemplo padrão: 10 minutos.
+Pode ser 8, 10, 12, 15 minutos ou outro valor.
+Pode existir uma partida sem limite de tempo.
+5.4 Limite de gols
+O administrador deve poder definir quantos gols encerram a partida.
+Exemplo: 1, 2 ou 3 gols.
+A partida pode terminar por tempo ou por atingir o limite de gols.
+O limite pode variar entre a primeira partida e as partidas seguintes.
+5.5 Regras específicas por partida
+O sistema deve permitir regras especiais para determinados momentos.
+Primeira partida até 3 gols.
+Partidas seguintes até 2 gols.
+Última partida sem limite de tempo, encerrando ao atingir determinado número de gols.
+Configurações específicas devem prevalecer sobre a configuração padrão quando definidas.
+6. Pré-lista e convocação
+O fluxo começa antes do futebol. O organizador deve conseguir criar um evento e compartilhar um link no grupo de WhatsApp.
+6.1 Link de pré-lista
+O administrador gera um link para o evento e envia no grupo.
+O jogador acessa o link.
+Informa seu nome.
+Indica se é jogador de linha ou goleiro, quando essa opção estiver disponível.
+Entra na pré-lista.
+A lista deve permanecer associada ao evento.
+6.2 Informações exibidas no evento
+A página de participação deve criar uma sensação de evento esportivo organizado.
+Nome da pelada.
+Data e horário.
+Local.
+Informações meteorológicas do local e horário, quando houver integração disponível.
+Status da pré-lista.
+Valor da participação, se houver.
+Informações de pagamento.
+7. Pagamento da participação
+O pagamento deve ser opcional. Nem toda pelada cobra, mas quando existe cobrança, o sistema pode reduzir bastante o trabalho do organizador.
+7.1 Pagamento via Pix
+O organizador pode cadastrar uma chave Pix ou informação de recebimento.
+Definir valor da participação.
+Exibir dados ou QR Code Pix.
+Permitir que o jogador acesse o pagamento a partir do evento.
+O organizador pode confirmar manualmente o pagamento, caso necessário.
+Possível evolução: Integrações financeiras mais avançadas podem ser adicionadas posteriormente. O MVP pode começar com Pix e confirmação simples.
+8. Check-in e confirmação de presença
+A pré-lista representa intenção de participação. A confirmação no dia representa quem realmente chegou.
+8.1 Confirmação de presença
+O administrador deve conseguir confirmar os jogadores que chegaram.
+O jogador pré-listado é confirmado.
+O status muda de pré-lista para presente.
+O jogador passa a estar disponível para formação dos times.
+8.2 Jogador que não estava na pré-lista
+O administrador pode adicionar um convidado que chegou de última hora.
+Adicionar nome.
+Definir linha ou goleiro.
+Inserir no fluxo de formação.
+Respeitar as regras de ordem ou sorteio definidas para o evento.
+9. Formação inicial dos times
+9.1 Modo por ordem de chegada
+Os jogadores são confirmados na ordem em que chegam e entram na formação nessa ordem.
+O administrador confirma um jogador.
+O jogador entra no próximo espaço disponível.
+O sistema continua preenchendo os times.
+9.2 Modo sorteio
+A ordem dos jogadores é definida por sorteio.
+O administrador pode sortear os jogadores.
+A ordem sorteada pode ser usada para preencher os times.
+A ordem também pode servir como critério de prioridade futura.
+9.3 Montagem manual
+O administrador deve poder ajustar a formação.
+Arrastar jogadores entre times.
+Mover jogador de volta para a lista.
+Desfazer uma ação.
+Adicionar jogador manualmente.
+Corrigir um erro de confirmação.
+Regra de usabilidade: Ações destrutivas ou que alteram a formação devem ter uma forma simples de desfazer.
+10. Organização dos times e da fila
+O conceito de fila é central para o produto. O sistema deve mostrar claramente quais times estão jogando e quais estão aguardando.
+10.1 Times em campo
+São os dois times que estão jogando naquele momento.
+Devem aparecer em destaque.
+Devem mostrar os jogadores.
+Devem mostrar o placar.
+Devem mostrar o cronômetro.
+10.2 Próximos times
+São os times que aguardam para entrar.
+Devem aparecer em ordem.
+O primeiro próximo deve ser claramente identificável.
+Os demais devem subir automaticamente conforme os times anteriores saem.
+10.3 Regra padrão de vitória
+O time vencedor permanece em campo, salvo regra especial.
+O time perdedor sai.
+O próximo time da fila entra.
+O time que saiu é colocado no final da fila, conforme a regra da pelada.
+11. Regra de empate e troca de times
+O empate precisa ser tratado com regras configuráveis, pois diferentes peladas possuem diferentes costumes.
+11.1 Empate com pelo menos dois times completos aguardando
+Se os dois times em campo empatam e existem pelo menos dois próximos times completos, os dois times que estavam jogando saem.
+Os dois primeiros próximos entram.
+Os dois times que saíram vão para o final da fila.
+Os demais times sobem na ordem.
+11.2 Empate sem dois times completos aguardando
+Se não existem dois times completos disponíveis para substituir os dois times em campo, deve ser aplicado um critério de desempate.
+Pênaltis alternados.
+Par ou ímpar.
+Vencedor da partida anterior permanece, quando houver partida anterior.
+Outros critérios configuráveis no futuro.
+11.3 Times incompletos na fila
+Um time parcialmente formado não deve ser tratado como time completo.
+O sistema deve identificar quantos jogadores faltam.
+Se houver uma regra de completar o time, deve puxar jogadores conforme a prioridade definida.
+A prioridade padrão pode ser do primeiro time/jogador da fila para baixo.
+12. Entrada tardia e reorganização
+Jogadores podem chegar depois do início do futebol. O sistema deve permitir inclusão sem destruir o estado atual.
+12.1 Entrada tardia
+Adicionar jogador ao evento em andamento.
+Cadastrar o jogador.
+Definir linha ou goleiro.
+Inserir na fila ou no próximo espaço permitido.
+Não alterar indevidamente partidas já iniciadas.
+12.2 Reorganização automática
+Quando um jogador é adicionado, removido ou muda de status, o sistema deve recalcular as filas necessárias.
+Preencher vagas de times incompletos quando aplicável.
+Manter a ordem de prioridade.
+Evitar duplicidade de jogador.
+13. Corte, retorno e exclusão de jogador
+13.1 Jogador cortado temporariamente
+Usado quando o jogador precisa sair, mas pode voltar.
+O jogador permanece registrado no evento.
+Fica marcado como cortado/inativo.
+Não conta como jogador disponível.
+Não deve ser simplesmente apagado.
+13.2 Retorno do jogador
+Se o jogador voltar, o administrador remove o status de cortado.
+O jogador volta a estar disponível.
+O sistema deve inseri-lo no ponto correto da fila conforme a regra definida.
+O retorno não deve exigir recadastro.
+13.3 Exclusão definitiva
+Usado quando o jogador foi embora e não voltará.
+O jogador é removido do evento.
+O sistema reorganiza as filas.
+Jogadores dos próximos times podem subir para preencher vagas, conforme as regras.
+14. Goleiros fixos e fila de goleiros
+Quando a pelada utiliza goleiros fixos, eles devem possuir uma lógica de rotação independente dos jogadores de linha.
+14.1 Cadastro de goleiro
+O jogador pode ser identificado como goleiro.
+Jogador de linha.
+Goleiro.
+A classificação pode ser definida no cadastro ou durante a entrada no evento.
+14.2 Formação com goleiro fixo
+Cada time que estiver em campo pode receber um goleiro fixo.
+O número de jogadores de linha é configurado separadamente.
+O goleiro não ocupa uma vaga de jogador de linha.
+14.3 Rotação do goleiro
+O goleiro acompanha a lógica do time ao qual está associado.
+Se o time perde, o goleiro sai junto com o time.
+O goleiro que saiu vai para o final da fila de goleiros.
+O próximo goleiro da fila entra.
+A rotação deve ser independente da fila de jogadores de linha.
+15. Tela principal durante a partida
+Esta é a tela mais importante do produto e deve ser otimizada para uso rápido, em ambiente de campo, com pouca atenção disponível.
+15.1 Elementos principais
+A tela deve permitir compreender o estado do futebol rapidamente.
+Cronômetro grande e visível.
+Placar em destaque.
+Dois times atuais em evidência.
+Jogadores de cada time.
+Goleiro identificado, quando aplicável.
+Próximos times em cards menores abaixo ou em uma fila visual.
+Ações rápidas para gol, encerramento, troca e ajustes.
+Princípio de UX: O administrador deve conseguir entender quem está jogando, quem é o próximo e qual é o placar em poucos segundos.
+16. Cronômetro e encerramento de partidas
+16.1 Início
+O administrador inicia a partida e o cronômetro começa a contar.
+O estado da partida deve ser salvo.
+O cronômetro deve continuar corretamente mesmo se a tela for atualizada.
+16.2 Encerramento por gols
+Quando o placar atingir o limite configurado, a partida termina.
+Exemplo: limite de 2 gols; ao chegar a 2, a partida é encerrada.
+O sistema registra o resultado.
+16.3 Encerramento por tempo
+Quando o tempo configurado termina, a partida é encerrada.
+Se houver vencedor pelo placar, esse time vence.
+Se o placar estiver empatado, a regra de empate é acionada.
+16.4 Última partida
+O administrador pode marcar uma partida como última partida do evento.
+Pode remover o limite de tempo.
+Pode definir um limite de gols.
+Exemplo: primeiro time a fazer 3 ou 5 gols vence.
+O evento pode ser encerrado após essa partida.
+17. Registro de gols e assistências
+17.1 Registro de gol
+O administrador registra o gol no momento em que ele acontece.
+Seleciona o time.
+Seleciona o jogador que marcou.
+O placar é atualizado.
+O evento é salvo no histórico.
+17.2 Assistência
+Opcionalmente, o administrador seleciona quem deu a assistência.
+A assistência deve ser opcional.
+A ausência de assistência não impede o registro do gol.
+17.3 Correção
+O administrador deve poder corrigir um gol ou assistência registrados incorretamente.
+Editar ou desfazer o registro.
+Recalcular placar e estatísticas.
+18. Histórico e estatísticas do dia
+Ao longo do evento, cada partida deve gerar dados estruturados. Ao finalizar o dia, o sistema pode gerar um resumo.
+18.1 Histórico de partidas
+Cada partida deve armazenar:
+Times participantes.
+Placar.
+Vencedor.
+Duração.
+Gols.
+Autores dos gols.
+Assistências, se registradas.
+18.2 Estatísticas do dia
+Possíveis métricas:
+Artilheiro.
+Maior número de assistências.
+Jogador com mais vitórias.
+Time com mais vitórias.
+Participações.
+Tempo de jogo, se tecnicamente possível.
+Quantidade de gols.
+MVP/Craque do dia.
+18.3 Premiações
+O produto pode criar uma experiência de encerramento.
+Artilheiro do dia.
+Rei das assistências.
+Craque do dia.
+Time campeão ou mais vencedor.
+Outras categorias configuráveis no futuro.
+19. Encerramento do evento
+Quando o futebol termina, o administrador deve ter uma ação explícita para finalizar o evento.
+19.1 Finalizar o futebol
+Ao finalizar o evento:
+O evento deixa de aceitar novas alterações normais.
+As partidas são encerradas.
+As estatísticas são consolidadas.
+O resumo final é gerado.
+O histórico fica disponível.
+20. Compartilhamento e WhatsApp
+20.1 Compartilhamento da convocação
+O sistema deve gerar uma mensagem pronta para o grupo.
+Nome do futebol.
+Data.
+Horário.
+Local.
+Link da pré-lista.
+Valor, quando houver.
+20.2 Compartilhamento do resumo
+Após o evento, o sistema pode gerar uma mensagem pronta.
+Resultado do dia.
+Artilheiro.
+Assistências.
+Craque do dia.
+Time mais vencedor.
+20.3 Lembretes
+O administrador pode programar ou disparar lembretes.
+Um dia antes.
+No dia do futebol.
+Com link direto para a pré-lista.
+Com informações do local, horário e clima.
+Implementação inicial recomendada: Começar com mensagens prontas para compartilhamento no WhatsApp. Automação oficial de mensagens deve ser tratada como uma etapa posterior, pois exige integração e regras específicas da plataforma.
+21. Princípios de UX/UI
+A interface deve ser simples o suficiente para uma pessoa entender sem treinamento.
+Ações importantes devem ser grandes e visíveis.
+A tela durante o jogo deve ter poucos elementos desnecessários.
+O sistema deve usar estados visuais claros: jogando, próximo, aguardando, cortado, goleiro, finalizado.
+Erros devem ser facilmente desfeitos.
+O usuário deve sempre saber qual é o próximo passo.
+A interface deve funcionar bem em celular.
+O produto deve ter uma sensação de evento esportivo organizado, não de planilha.
+22. Modelo mental do sistema
+Para o desenvolvimento, o sistema deve ser pensado como uma máquina de estados. O evento possui um estado e as ações alteram esse estado.
+Objeto
+Estados principais
+Exemplos de transição
+Evento
+Rascunho / Aberto / Em andamento / Finalizado
+Criar → abrir pré-lista → iniciar → finalizar
+Jogador
+Pré-lista / Presente / Jogando / Próximo / Cortado / Excluído
+Confirmar → jogar → sair → voltar ou excluir
+Time
+Próximo / Jogando / Vencedor / Perdedor / Fila
+Entrar → jogar → vencer ou perder → mudar de posição
+Partida
+Aguardando / Em andamento / Finalizada
+Iniciar → gol/tempo → finalizar
+Goleiro
+Disponível / Jogando / Próximo
+Entrar → jogar → sair → final da fila
+23. Ordem recomendada de construção
+O desenvolvimento não deve tentar construir todas as funcionalidades ao mesmo tempo. A recomendação é construir em camadas, validando cada camada antes de adicionar a próxima.
+FASE 1 — Fundação
+Autenticação do Super Administrador.
+Estrutura da pelada.
+Administradores auxiliares.
+Permissões básicas.
+Configurações gerais.
+FASE 2 — Evento e pré-jogo
+Criar evento.
+Data, hora e local.
+Pré-lista.
+Link compartilhável.
+Jogadores de linha/goleiros.
+Pagamento Pix básico.
+FASE 3 — Check-in e formação
+Confirmar presença.
+Adicionar convidado.
+Modo ordem de chegada.
+Modo sorteio.
+Montagem e ajuste manual dos times.
+FASE 4 — Motor do jogo
+Times em campo.
+Fila de próximos.
+Cronômetro.
+Placar.
+Regra de vitória.
+Regra de derrota.
+Regra de empate.
+Troca automática.
+FASE 5 — Regras avançadas
+Goleiros fixos.
+Entrada tardia.
+Corte temporário.
+Retorno.
+Exclusão.
+Times incompletos.
+Reorganização automática.
+FASE 6 — Estatísticas
+Gols.
+Assistências.
+Histórico.
+Artilheiro.
+MVP/Craque.
+Resumo do dia.
+FASE 7 — Retenção e automação
+Mensagens prontas.
+Lembretes.
+Compartilhamento de resultados.
+Integrações avançadas com WhatsApp.
+24. Requisitos não funcionais importantes
+Estado do jogo deve ser persistido continuamente.
+A atualização deve ser confiável, pois o sistema será usado durante uma atividade ao vivo.
+O sistema deve evitar duplicidade de jogadores.
+O sistema deve registrar quem fez alterações relevantes, quando necessário.
+O sistema deve permitir desfazer ações críticas.
+A interface deve ser responsiva e priorizar uso em celular.
+A lógica de regras deve ser separada da interface para permitir novas regras no futuro.
+As configurações padrão devem permitir iniciar uma pelada rapidamente, sem exigir dezenas de configurações.
+25. O que o desenvolvedor deve entender como prioridade
+O produto não deve ser tratado como um simples CRUD de jogadores. O principal valor está na lógica de transição do jogo.
+A fila precisa ser confiável.
+A entrada e saída de jogadores precisa ser previsível.
+As regras de vitória, derrota e empate precisam ser configuráveis.
+O sistema deve sempre saber quem está jogando e quem é o próximo.
+As alterações durante o jogo não podem destruir o histórico.
+O usuário precisa conseguir corrigir erros sem precisar recomeçar o evento.
+O produto deve ser construído para uso real em campo, com pouco tempo para pensar.
+26. Resumo executivo
+O 10 ou 2 é uma plataforma para administrar uma pelada completa. O usuário principal cria e administra uma organização de futebol, cria eventos, envia links de pré-lista, organiza presença, pode receber pagamentos, forma times e controla as partidas em tempo real.
+Durante o jogo, o sistema controla cronômetro, placar, gols, fila de times, regras de permanência, derrotas, empates, desempates, goleiros fixos, entradas tardias, cortes e reorganização. Ao final, o sistema consolida o histórico e pode gerar estatísticas e premiações.
+O diferencial é a continuidade: o mesmo sistema acompanha o futebol do primeiro convite até o encerramento do dia. A experiência deve ser simples, rápida e visual, fazendo com que a organização manual pareça desnecessária depois que o grupo se acostuma ao produto.

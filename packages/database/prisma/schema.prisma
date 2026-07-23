@@ -1,0 +1,149 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  peladas      Pelada[]      @relation("PeladaOwner")
+  auxPeladas   PeladaAdmin[]
+  players      Player[]
+}
+
+model Pelada {
+  id               String        @id @default(uuid())
+  name             String
+  ownerId          String
+  owner            User          @relation("PeladaOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  
+  // Configurações padrão
+  playersPerTeam   Int           @default(5)
+  useGoalkeepers   Boolean       @default(true)
+  matchTimeMinutes Int           @default(10)
+  matchGolLimit    Int           @default(2)
+  drawRule         String        @default("BOTH_OUT") // BOTH_OUT, PENALTIES, PREVIOUS_WINNER
+  
+  admins           PeladaAdmin[]
+  events           Event[]
+}
+
+model PeladaAdmin {
+  id        String   @id @default(uuid())
+  peladaId  String
+  userId    String
+  pelada    Pelada   @relation(fields: [peladaId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  canManage Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@unique([peladaId, userId])
+}
+
+model Player {
+  id          String       @id @default(uuid())
+  name        String
+  defaultRole String       @default("LINE") // LINE, GOALKEEPER
+  createdById String
+  createdBy   User         @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  attendances Attendance[]
+}
+
+model Event {
+  id          String       @id @default(uuid())
+  peladaId    String
+  pelada      Pelada       @relation(fields: [peladaId], references: [id], onDelete: Cascade)
+  name        String
+  date        DateTime
+  time        String
+  location    String
+  status      String       @default("DRAFT") // DRAFT, PRE_LIST, ACTIVE, FINISHED
+  pixKey      String?
+  pixValue    Float?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  attendances Attendance[]
+  teams       Team[]
+  matches     Match[]
+}
+
+model Attendance {
+  id             String   @id @default(uuid())
+  eventId        String
+  event          Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  playerId       String?
+  player         Player?  @relation(fields: [playerId], references: [id], onDelete: SetNull)
+  name           String
+  role           String   @default("LINE") // LINE, GOALKEEPER
+  status         String   @default("PRE_LIST") // PRE_LIST, PRESENT, CANCELED, CUT
+  paid           Boolean  @default(false)
+  teamId         String?
+  team           Team?    @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  
+  goalsScored    Goal[]   @relation("Scorer")
+  goalsAssisted  Goal[]   @relation("Assistant")
+}
+
+model Team {
+  id         String       @id @default(uuid())
+  eventId    String
+  event      Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name       String
+  color      String?
+  orderIndex Int
+  status     String       @default("BENCH") // BENCH, PLAYING, WAITING
+  players    Attendance[]
+  
+  homeMatches Match[]     @relation("HomeTeam")
+  awayMatches Match[]     @relation("AwayTeam")
+  goals       Goal[]
+}
+
+model Match {
+  id              String    @id @default(uuid())
+  eventId         String
+  event           Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  homeTeamId      String
+  homeTeam        Team      @relation("HomeTeam", fields: [homeTeamId], references: [id], onDelete: Cascade)
+  awayTeamId      String
+  awayTeam        Team      @relation("AwayTeam", fields: [awayTeamId], references: [id], onDelete: Cascade)
+  homeScore       Int       @default(0)
+  awayScore       Int       @default(0)
+  status          String    @default("PENDING") // PENDING, PLAYING, FINISHED
+  durationSeconds Int       @default(0)
+  orderIndex      Int
+  startedAt       DateTime?
+  endedAt         DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  goals           Goal[]
+}
+
+model Goal {
+  id          String     @id @default(uuid())
+  matchId     String
+  match       Match      @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  teamId      String
+  team        Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  scorerId    String
+  scorer      Attendance @relation("Scorer", fields: [scorerId], references: [id], onDelete: Cascade)
+  assistantId String?
+  assistant   Attendance? @relation("Assistant", fields: [assistantId], references: [id], onDelete: SetNull)
+  minute      Int?
+  createdAt   DateTime   @default(now())
+}
