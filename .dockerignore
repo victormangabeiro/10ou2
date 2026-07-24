@@ -1,0 +1,18 @@
+# Ignore node_modules from build context
+node_modules
+**/node_modules
+
+# Ignore build outputs
+dist
+**/dist
+.turbo
+out
+
+# Ignore git and local env files
+.git
+.env
+*.env
+.env.*
+.gitignore
+README.md
+docs
