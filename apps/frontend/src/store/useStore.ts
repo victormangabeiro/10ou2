@@ -284,6 +284,12 @@ export const useStore = create<AppStore>((set, get) => {
         }
         const user = await response.json();
         set({ user, isAuthenticated: true, authLoading: false });
+        
+        // Se estiver autenticado e na tela de login/cadastro, redireciona para o Dashboard
+        const currentView = get().currentView;
+        if (currentView === 'LOGIN' || currentView === 'REGISTER') {
+          get().navigate('DASHBOARD');
+        }
       } catch (e) {
         get().setToken(null);
         set({ authLoading: false });
