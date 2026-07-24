@@ -25,6 +25,8 @@ RUN turbo run build --filter=@10ou2/backend...
 # Runner stage
 FROM node:24-alpine AS runner
 
+RUN apk add --no-cache openssl
+
 WORKDIR /usr/src/app
 
 COPY --from=builder /usr/src/app ./
