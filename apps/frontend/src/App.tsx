@@ -3,7 +3,7 @@ import { useStore } from './store/useStore';
 import { 
   Trophy, Timer as TimerIcon, Play, Pause, Plus, Trash2, Users, LogOut, 
   Calendar, MapPin, DollarSign, ChevronRight, ArrowLeft, 
-  Share2, Copy, ShieldAlert, Activity, RefreshCw, UserCheck, CheckCircle
+  Share2, Copy, ShieldAlert, Activity, RefreshCw, UserCheck, CheckCircle, User
 } from 'lucide-react';
 
 function App() {
@@ -44,6 +44,13 @@ function App() {
   const [showGoalModal, setShowGoalModal] = useState<{ teamId: string; side: 'home' | 'away' } | null>(null);
   const [goalScorerId, setGoalScorerId] = useState('');
   const [goalAssistantId, setGoalAssistantId] = useState('');
+
+  // Profile edit state
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [profileName, setProfileName] = useState('');
+  const [profileCurrentPassword, setProfileCurrentPassword] = useState('');
+  const [profileNewPassword, setProfileNewPassword] = useState('');
+  const [profileConfirmPassword, setProfileConfirmPassword] = useState('');
 
   // Timer Ref
   const timerIntervalRef = useRef<any>(null);
@@ -187,6 +194,13 @@ function App() {
         {isAuthenticated && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{user?.name}</span>
+            <button className="btn-icon" onClick={() => {
+              setProfileName(user?.name || '');
+              setProfileCurrentPassword('');
+              setProfileNewPassword('');
+              setProfileConfirmPassword('');
+              setShowProfileModal(true);
+            }} title="Editar Perfil"><User size={16} /></button>
             <button className="btn-icon" onClick={logout} title="Sair"><LogOut size={16} /></button>
           </div>
         )}
@@ -1123,6 +1137,97 @@ function App() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Profile Modal */}
+      {showProfileModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.85)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 99999, padding: '1rem'
+        }}>
+          <div className="card glass" style={{ width: '100%', maxWidth: '380px' }}>
+            <h3 style={{ marginBottom: '1.25rem', fontSize: '1.25rem', color: 'var(--accent-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 'bold' }}>
+              <User size={20} />
+              Editar Perfil
+            </h3>
+            
+            <div className="form-group">
+              <label>Nome</label>
+              <input 
+                type="text" 
+                value={profileName} 
+                onChange={(e) => setProfileName(e.target.value)} 
+                placeholder="Seu nome"
+              />
+            </div>
+
+            <div style={{ borderTop: '1px solid var(--border-color)', margin: '1.25rem 0', paddingTop: '0.75rem' }}>
+              <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--text-secondary)', fontWeight: 700, letterSpacing: '0.05em' }}>Alterar Senha (Opcional)</span>
+            </div>
+
+            <div className="form-group">
+              <label>Senha Atual</label>
+              <input 
+                type="password" 
+                value={profileCurrentPassword} 
+                onChange={(e) => setProfileCurrentPassword(e.target.value)} 
+                placeholder="Digite a senha atual"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Nova Senha</label>
+              <input 
+                type="password" 
+                value={profileNewPassword} 
+                onChange={(e) => setProfileNewPassword(e.target.value)} 
+                placeholder="Mínimo 6 caracteres"
+              />
+            </div>
+
+            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+              <label>Confirmar Nova Senha</label>
+              <input 
+                type="password" 
+                value={profileConfirmPassword} 
+                onChange={(e) => setProfileConfirmPassword(e.target.value)} 
+                placeholder="Confirme a nova senha"
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button className="btn-secondary" style={{ flex: 1 }} onClick={() => setShowProfileModal(false)}>
+                Cancelar
+              </button>
+              <button className="btn-primary" style={{ flex: 1 }} onClick={async () => {
+                if (!profileName.trim()) {
+                  return showToast('Nome não pode ficar vazio', 'error');
+                }
+                if (profileNewPassword) {
+                  if (!profileCurrentPassword) {
+                    return showToast('Digite a senha atual para alterar a senha', 'error');
+                  }
+                  if (profileNewPassword.length < 6) {
+                    return showToast('A nova senha deve ter no mínimo 6 caracteres', 'error');
+                  }
+                  if (profileNewPassword !== profileConfirmPassword) {
+                    return showToast('As senhas não coincidem', 'error');
+                  }
+                }
+                const success = await useStore.getState().updateProfile(
+                  profileName,
+                  profileCurrentPassword || undefined,
+                  profileNewPassword || undefined
+                );
+                if (success) {
+                  setShowProfileModal(false);
+                }
+              }}>
+                Salvar
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

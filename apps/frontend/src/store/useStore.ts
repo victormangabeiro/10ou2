@@ -128,6 +128,7 @@ interface AppStore {
   registerUser: (email: string, password: string, name: string) => Promise<boolean>;
   logout: () => void;
   checkMe: () => Promise<void>;
+  updateProfile: (name?: string, currentPassword?: string, newPassword?: string) => Promise<boolean>;
 
   // Actions - Navigation
   navigate: (view: AppStore['currentView'], params?: { peladaId?: string; eventId?: string }) => void;
@@ -286,6 +287,26 @@ export const useStore = create<AppStore>((set, get) => {
       } catch (e) {
         get().setToken(null);
         set({ authLoading: false });
+      }
+    },
+
+    updateProfile: async (name, currentPassword, newPassword) => {
+      try {
+        const response = await fetch(`${API_URL}/auth/profile`, {
+          method: 'PATCH',
+          headers: getHeaders(),
+          body: JSON.stringify({ name, currentPassword, newPassword }),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.message || 'Erro ao atualizar perfil');
+        }
+        set({ user: data });
+        get().showToast('Perfil atualizado com sucesso!', 'success');
+        return true;
+      } catch (error: any) {
+        get().showToast(error.message || 'Falha ao atualizar perfil', 'error');
+        return false;
       }
     },
 

@@ -1,8 +1,9 @@
-import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, ConflictException, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
@@ -67,6 +68,46 @@ export class AuthService {
       },
       token,
     };
+  }
+
+  async updateProfile(userId: string, updateProfileDto: UpdateProfileDto) {
+    const { name, currentPassword, newPassword } = updateProfileDto;
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (!user) {
+      throw new UnauthorizedException('Usuário não encontrado.');
+    }
+
+    const dataToUpdate: any = {};
+
+    if (name) {
+      dataToUpdate.name = name;
+    }
+
+    if (newPassword) {
+      if (!currentPassword) {
+        throw new BadRequestException('A senha atual é obrigatória para alterar a senha.');
+      }
+      const isPasswordValid = await bcrypt.compare(currentPassword, user.passwordHash);
+      if (!isPasswordValid) {
+        throw new UnauthorizedException('A senha atual está incorreta.');
+      }
+      dataToUpdate.passwordHash = await bcrypt.hash(newPassword, 10);
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: dataToUpdate,
+      select: {
+        id: true,
+        email: true,
+        name: true,
+      },
+    });
+
+    return updatedUser;
   }
 
   private generateToken(userId: string, email: string) {
